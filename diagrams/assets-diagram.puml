@@ -1,0 +1,79 @@
+@startuml
+!define AzurePuml https://raw.githubusercontent.com/plantuml-stdlib/Azure-PlantUML/release/2-2/dist
+!includeurl AzurePuml/AzureCommon.puml
+!includeurl AzurePuml/Analytics/AzureEventHub.puml
+!includeurl AzurePuml/Analytics/AzureStreamAnalyticsJob.puml
+!includeurl AzurePuml/Databases/AzureCosmosDb.puml
+
+package Azure {
+
+  package ResourceGroup {
+    class NewResourceGroup
+  }
+
+  package B2C {
+    class B2CEnvironment
+  }
+
+  package StaticWebApp {
+    class StaticWebApp
+  }
+
+  package FunctionApp {
+    class IsolatedFunctionApp
+  }
+
+  package SQLDatabase {
+    class SQLDatabase
+  }
+
+  package StorageAccount {
+    class StorageAccount
+  }
+
+  package KeyVault {
+    class KeyVault
+  }
+
+  package AppInsights {
+    class AppInsights
+  }
+
+  package Network {
+    package DMZ {
+      class DMZ
+    '   note "Access restricted to developers"
+    }
+
+    package AzureGateway {
+      class AzureGateway
+    '   note "Protects against attacks"
+    }
+
+    package Internal {
+      class InternalLoadBalancer
+    '   note "Access granted only to authorized services"
+    }
+
+    DMZ --up-> AzureGateway : Inbound Traffic
+    AzureGateway --down-> DMZ : Outbound Traffic
+    AzureGateway --left-> Internal : Outbound Traffic
+
+    Internal --right-> StaticWebApp : HTTP Traffic
+    Internal --right-> IsolatedFunctionApp : HTTP Traffic
+  }
+
+  NewResourceGroup --> B2CEnvironment
+  B2CEnvironment --> StaticWebApp
+  B2CEnvironment --> FunctionApp
+  B2CEnvironment --> SQLDatabase
+  B2CEnvironment --> StorageAccount
+  B2CEnvironment --> KeyVault
+  B2CEnvironment --> AppInsights
+
+  StaticWebApp ..> InternalLoadBalancer
+  IsolatedFunctionApp ..> InternalLoadBalancer
+
+}
+
+@enduml
