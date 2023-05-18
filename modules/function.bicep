@@ -63,6 +63,7 @@ resource creatingFunctionApp 'Microsoft.Web/sites@2020-12-01' = {
   name: 'func-${functionName}'
   location: location
   kind: 'functionapp'
+  tags: totalTags
   properties: {
     serverFarmId: serverFarm.id
     siteConfig: {
