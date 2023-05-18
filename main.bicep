@@ -15,7 +15,7 @@ param location string = 'uksouth'
 
 @maxLength(10)
 @description('The base name of the application.')
-param baseApplicationName string = 'shiftleft'
+param baseApplicationName string = 'shiftleft' // change this to match your own application name or it will fail if someone else has already used it
 
 @description('The name of the environment. This must be dev, test, or prod.')
 @allowed([
