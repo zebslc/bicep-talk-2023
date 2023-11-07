@@ -28,10 +28,9 @@ param logWorkspaceId string
 
 // A list of services that will be created in this environment
 // Add to this list as you create new services
-var services = [
-  'BicepApi'
-  'AnotherApi'
-]
+
+@description('A list of services that will be created in this environment')
+param services array = ['service1', 'service2', 'service3']
 
 // A list of origins that are allowed to call the function apps
 var allowedOrigins = {

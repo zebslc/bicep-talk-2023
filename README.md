@@ -15,7 +15,7 @@ This repo will be updated with the second presentation containing all the devops
 2.  Manually deploying your first environment
     - Log into Azure CLI with `az login`
     - Choose which subscription you wish to test this on with `az account set --subscription 99999-9999-9999-99999-99999999`
-    - Initiate the creation with `az deployment sub create --location uksouth --template-file main.bicep --parameters location=uksouth baseApplicationName={<10 character base name here} environmentName=dev environmentNumber=1 countryCode=GB createB2C=true`.  
+    - Initiate the creation with `az deployment sub create --location uksouth --template-file main.bicep --parameters location=uksouth baseApplicationName={<10 character base name here} environmentName=dev environmentNumber=1 countryCode=GB createB2C=true createDatabase=false createStaticWebsite=false servicesToCreate="['certificate']" createKeyVault=false`.  
         - More info about running from the CLI here https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/deploy-cli
         - If you wish to do a what-if use the following https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/deploy-what-if?tabs=azure-powershell%2CCLI
     - Each of the parameters has a description in main.bicep

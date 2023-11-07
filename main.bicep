@@ -43,6 +43,22 @@ param countryCode string = 'GB'
 @description('Should we create a b2c tenant? This can only be created once after which it has to be updated or deleted.') // set by deployment script https://ochzhen.com/blog/check-if-resource-exists-azure-bicep
 param createB2C bool = false
 
+@description('Create a database?')
+param createDatabase bool = false
+
+@description('Create a keyvault? Note this will happen automatically if you create a database or b2c tenant.')
+param createKeyVault bool = false
+
+
+@description('Create a static website for holding an Angular site?')
+param createStaticWebsite bool = false
+
+@description('A list of services that will be created in this environment')
+param servicesToCreate array = [
+  'BicepApi'
+  'AnotherApi'
+]
+
 // Pre-calculated values
 @description('Pre-calculate if this is the production environment')
 var isProduction = environmentName == 'prod'
@@ -94,7 +110,7 @@ module logWorkspace 'modules/logWorkspace.bicep' = {
 }
 
 // Create key vault for secrets
-module keyVault 'modules/keyvault.bicep' = {
+module keyVault 'modules/keyvault.bicep' = if(createKeyVault || createDatabase) {
   name: 'Create-KeyVault'
   scope: deploymentResourceGroup
   params: {
@@ -106,7 +122,7 @@ module keyVault 'modules/keyvault.bicep' = {
 }
 
 // Set up the database and store the password in key vault
-module database 'modules/database.bicep' = {
+module database 'modules/database.bicep' = if(createDatabase) {
   name: 'Create-Database'
   scope: deploymentResourceGroup
   params: {
@@ -125,7 +141,7 @@ module database 'modules/database.bicep' = {
 
 // Create the b2c tenant - note in Azure portal, choose directories against your subscription and then choose the b2c tenant to see accounts etc
 // It creates a tenant resource within your resource group but to interact with b2c switch directories 
-module b2c 'modules/b2c.bicep' = {
+module b2c 'modules/b2c.bicep' = if(createB2C) {
   name: 'Create-B2C'
   scope: deploymentResourceGroup
   params: {
@@ -139,7 +155,7 @@ module b2c 'modules/b2c.bicep' = {
 }
 
 // Add Static Web App and app insights for it
-module staticWebsite 'modules/staticWebsite.bicep' = {
+module staticWebsite 'modules/staticWebsite.bicep'= if(createStaticWebsite) {
   name: 'Create-StaticWebsite'
   scope: deploymentResourceGroup
   params: {
@@ -167,6 +183,7 @@ module functionsApp 'modules/functions.bicep' = {
     environmentName: environmentName
     logWorkspaceId: logWorkspace.outputs.createdWorkspaceId
     storageAccountName: createdStorageModule.outputs.storageAccountName
+    services: servicesToCreate
   }
   dependsOn: [
     logWorkspace
