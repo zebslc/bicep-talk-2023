@@ -23,9 +23,10 @@ param baseNameForResources string
 param tags object
 
 var standardSku = {
-  name: 'GP_S_Gen5_1'
-  tier: 'GeneralPurpose'
+  name: 'HS_S_Gen5'
+  tier: 'Hyperscale'
   family: 'Gen5'
+  capacity: 2
 }
 
 // Make these premium for production

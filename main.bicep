@@ -14,7 +14,7 @@
 param location string = 'uksouth'
 
 @maxLength(10)
-@description('The base name of the application.')
+@description('The base name of the application (10 chars).')
 param baseApplicationName string = 'shiftleft' // change this to match your own application name or it will fail if someone else has already used it
 
 @description('The name of the environment. This must be dev, test, or prod.')
@@ -46,7 +46,7 @@ param createB2C bool = false
 @description('Create a database?')
 param createDatabase bool = false
 
-@description('Create a keyvault? Note this will happen automatically if you create a database or b2c tenant.')
+@description('Create a keyvault? Note this will happen automatically if you create a database or function app.')
 param createKeyVault bool = false
 
 
@@ -172,7 +172,7 @@ module staticWebsite 'modules/staticWebsite.bicep'= if(createStaticWebsite) {
 }
 
 // Create all the function apps (using consumption plan because it is cheap and can scale nicely)
-module functionsApp 'modules/functions.bicep' = {
+module functionsApp 'modules/functions.bicep' = if(length(servicesToCreate) > 0) {
   name: 'Create-FunctionsApps'
   scope: deploymentResourceGroup
   params: {
@@ -193,11 +193,14 @@ module functionsApp 'modules/functions.bicep' = {
 
 
 // Output all the things we created so the pipeline can pick them up
+output b2cCreated bool = createB2C
+output databaseCreated bool = createDatabase
+output keyVaultCreated bool = createKeyVault
+output staticWebsiteCreated bool = createStaticWebsite
+output servicesCreated bool = (length(servicesToCreate) > 0)
+
 output createdResourceGroupName string = deploymentResourceGroup.name
 output createdStorageAccountName string = createdStorageModule.outputs.storageAccountName
 output createdLogWorkspaceId string = logWorkspace.outputs.createdWorkspaceId
 output createdAppInsightsInstrumentationKeyForStaticWebsite string = staticWebsite.outputs.appInsightsInstrumentationKeyForStaticWebsite
 output createdFunctionsApps array = functionsApp.outputs.createdFunctionApps
-output b2cCreated bool = createB2C
-
-
